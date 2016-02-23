@@ -49,3 +49,20 @@
 /* Function implementations                                                         */
 /*                                                                                  */
 /************************************************************************************/
+
+static int _ds_read(void * context, char * buffer, int len)
+{
+	int ret = 0;
+	s_erc error;
+	S_CLR_ERR(&error);
+	ret = SDatasourceRead((SDatasource *) context, (void *) buffer, sizeof(char), len, &error);
+	if (error == S_IOEOF)
+		return ret;
+	if (S_CHK_ERR(&error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"SDatasourceRead\" failed"))
+		return -1;
+
+	return ret;
+}
+
