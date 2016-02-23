@@ -66,3 +66,17 @@ static int _ds_read(void * context, char * buffer, int len)
 	return ret;
 }
 
+static int _ds_close(void * context)
+{
+	s_erc error;
+	SDatasource * ds = (SDatasource *) context;
+	S_CLR_ERR(&error);
+	if (ds != NULL)
+		S_DELETE(ds, "s_read_utt_maryxml", &error);
+	if (S_CHK_ERR(&error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"xmlInputClose\" failed"))
+		return -1;
+	return 0;
+}
+
