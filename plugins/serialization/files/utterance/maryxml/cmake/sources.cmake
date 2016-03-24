@@ -17,6 +17,7 @@ speect_plugin_sources(
   src/plugin.c
   src/utt_maryxml.c
   src/write.c
+  src/read.c
   )
  
 
