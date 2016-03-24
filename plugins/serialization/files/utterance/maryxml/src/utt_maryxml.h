@@ -106,6 +106,15 @@ S_LOCAL void _s_serialized_maryxml_utt_free(s_erc *error);
 S_LOCAL void s_write_utt_maryxml(const SUtterance *utt, SDatasource *ds, s_erc *error);
 
 
+/**
+ * Read an utterance in MaryXML format to the given data source.
+ *
+ * @param ds The data source where to write to.
+ * @param error Error code.
+ */
+S_LOCAL SUtterance* s_read_utt_maryxml(const SDatasource *ds, s_erc *error);
+
+
 /************************************************************************************/
 /*                                                                                  */
 /* End external c declaration                                                       */
