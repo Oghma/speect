@@ -80,3 +80,121 @@ static int _ds_close(void * context)
 	return 0;
 }
 
+S_LOCAL SUtterance* s_read_utt_maryxml(const SDatasource *ds, s_erc *error)
+{
+	SUtterance * utt;
+	char * input = NULL;
+	SRelation * tokenRelation = NULL;
+	SRelation * phraseRelation = NULL;
+	SRelation * wordRelation = NULL;
+	SRelation * syllableRelation = NULL;
+	SRelation * sylStructRelation = NULL;
+	SRelation * segmentRelation = NULL;
+	xmlTextReaderPtr reader;
+	int ret;
+
+	S_CLR_ERR(error);
+
+	/* Create SUtterance and relations */
+	utt = S_NEW(SUtterance, error);
+	if(S_CHK_ERR(error, S_CONTERR,
+		       "s_read_utt_maryxml",
+		       "Call to \"SUtteranceInit\" failed"))
+		return NULL;
+
+	tokenRelation = SUtteranceNewRelation(utt, "Token", error);
+	if (S_CHK_ERR(error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"SUtteranceNewRelation\" failed"))
+		return NULL;
+
+	wordRelation = SUtteranceNewRelation(utt, "Word", error);
+	if (S_CHK_ERR(error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"SUtteranceNewRelation\" failed"))
+		return NULL;
+
+	phraseRelation = SUtteranceNewRelation(utt, "Phrase", error);
+	if (S_CHK_ERR(error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"SUtteranceNewRelation\" failed"))
+		return NULL;
+
+	sylStructRelation = SUtteranceNewRelation(utt, "SylStructure", error);
+	if (S_CHK_ERR(error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"SUtteranceNewRelation\" failed"))
+		return NULL;
+
+	syllableRelation = SUtteranceNewRelation(utt, "Syllable", error);
+	if (S_CHK_ERR(error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"SUtteranceNewRelation\" failed"))
+		return NULL;
+
+	segmentRelation = SUtteranceNewRelation(utt, "Segment", error);
+	if (S_CHK_ERR(error, S_CONTERR,
+		      "s_read_utt_maryxml",
+		      "Call to \"SUtteranceNewRelation\" failed"))
+		return NULL;
+
+	/* Init reader to read from a datasource */
+	reader = xmlReaderForIO(_ds_read,
+				_ds_close,
+				(void *) ds,
+				"http://mary.dfki.de/2002/MaryXML",
+				"UTF-8",
+				0);
+
+	if (reader == NULL)
+	{
+		S_CTX_ERR(error, S_CONTERR,
+			  "s_read_utt_maryxml",
+			  "Call to \"xmlReaderForIo\" failed");
+		return NULL;
+	}
+
+	/* Start reading */
+	ret = xmlTextReaderRead(reader);
+	while (ret == 1)
+	{
+		int nodeType;
+		const xmlChar * nameElement = xmlTextReaderConstName(reader);
+
+		if (s_strcmp(nameElement, "s", error) == 1)
+		{
+			nodeType = xmlTextReaderNodeType(reader);
+			if (nodeType == 1)
+			{
+
+			} else {
+				if (nodeType == 15) {
+
+				}
+				else
+					return NULL;
+			}
+		}
+
+		if (S_CHK_ERR(error, S_CONTERR,
+			      "s_read_utt_maryxml",
+			      "Call to \"s_strcmp\" failed"))
+			return NULL;
+
+
+
+
+		ret = xmlTextReaderRead(reader);
+	}
+
+	xmlFreeTextReader(reader);
+	if (ret != 0)
+	{
+		S_CTX_ERR(error, S_IOEOF,
+			  "s_read_utt_maryxml",
+			  "Call to \"xmlTextReaderRead\" failed");
+		return NULL;
+	}
+
+	return utt;
+}
