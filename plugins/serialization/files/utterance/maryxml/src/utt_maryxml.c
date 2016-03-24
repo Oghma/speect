@@ -132,14 +132,23 @@ static void Dispose(void *obj, s_erc *error)
 
 static SObject *Load(const char *path, s_erc *error)
 {
-	S_CTX_ERR(error, S_FAILURE,
+	SUtterance * utt;
+	SDatasource * ds;
+
+	S_CLR_ERR(error);
+
+	ds = SFilesourceOpenFile(path, "r", error);
+	if (S_CHK_ERR(error, S_CONTERR,
+				  "Save",
+				  "Call to \"SFilesourceOpenFile\" failed"))
+		return NULL;
+	utt = s_read_utt_maryxml(ds, error);
+	if (S_CHK_ERR(error, S_CONTERR,
 			  "Load",
-			  "Failed to load MaryXML from file '%s', load method not implemented",
-			  path);
+		           "Call to \"s_read_utt_maryxml\" failed"))
+		return NULL;
 
-	return NULL;
-
-	S_UNUSED(path);
+	return S_OBJECT(utt);
 }
 
 
